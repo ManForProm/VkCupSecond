@@ -30,6 +30,7 @@ fun InfinityView(
     navHostController: NavHostController,
     specificPageIdentifier:String,
     list: MutableList<Int>,
+    onClickSpecificCard: (Int,String, String, NavHostController) -> Unit,
     onPreScroll: (MutableList<Int>) -> Unit
 ) {
     val nestedScrollConnection = remember {
@@ -63,7 +64,7 @@ fun InfinityView(
                     id = it,
                     specificPageIdentifier = specificPageIdentifier,
                     navHostController = navHostController,
-                    onClickCard = ::navigateToSpecificInfinityView,
+                    onClickCard = onClickSpecificCard,
                 )
             }
         }

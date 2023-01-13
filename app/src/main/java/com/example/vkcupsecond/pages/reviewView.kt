@@ -1,16 +1,12 @@
 package com.example.vkcupsecond
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Grade
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,8 +25,9 @@ fun ReviewView(
 ) {
     InfinityView(navHostController = navHostController,
         list = reviewList, onPreScroll = onPreScroll,
-        specificPageIdentifier = specificPageIdentifier//our page in infinity list
-    )
+        specificPageIdentifier = specificPageIdentifier,//our page in infinity list
+        onClickSpecificCard = ,
+// )
 }
 
 @Composable
@@ -50,7 +47,10 @@ fun ReviewSpecificPage(reviewName: String,
                 .padding(10.dp),
             Arrangement.Center
         ) {
+            Column() {
 
+                InAppReview()
+            }
         }
     }
 }
