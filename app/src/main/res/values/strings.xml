@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">VkCupSecond</string>
+    <string name="done_icon_desc">current task is done</string>
+    <string name="wrong_icon_desc">current task isnt done</string>
+    <string name="app_review">app review</string>
+</resources>
