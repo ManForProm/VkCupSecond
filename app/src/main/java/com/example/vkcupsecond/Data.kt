@@ -3,9 +3,11 @@ package com.example.vkcupsecond
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.NavHostController
 
 
 object DataProvider {
+    lateinit var navHostControllerGlobal:NavHostController
     val screenList = listOf(
         Screen(1, "Многоступенчатый опрос"),
         Screen(2, "Сопоставление элементов между двумя столбцами"),
@@ -48,9 +50,10 @@ data class ReviewInformation(
 )
 
 data class GapsInformation(
-    val gapsLocation:MutableList<Int>,
-    val wordList:MutableList<String>
+    val wordList:MutableList<Word>,
+    val gapsCount:Int,
 )
+data class Word(val word: String, val needGap:Boolean,val next:MutableState<Boolean>)
 
 enum class AnimationStateButton(val boolean: Boolean) {
     CLICKED(true), UNCLICKED(false), FIRSTTIME(false)
