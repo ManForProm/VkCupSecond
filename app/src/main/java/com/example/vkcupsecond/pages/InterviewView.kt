@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -47,25 +48,27 @@ import kotlin.math.roundToInt
 @Composable
 fun InterviewView(
     navHostController: NavHostController,
-    questionsList: MutableList<Int>,
-    specificPageIdentifier:String,
-    onPreScroll: (MutableList<Int>) -> Unit
-){
-    InfinityView(navHostController = navHostController,
+    questionsList: MutableList<Int> = mutableListOf(),
+    specificPageIdentifier: String,
+    onPreScroll: (MutableList<Int>) -> Unit,
+) {
+    InfinityView(
+        navHostController = navHostController,
         list = questionsList, onPreScroll = onPreScroll,
-        specificPageIdentifier = specificPageIdentifier//our page in infinity list
+        specificPageIdentifier = specificPageIdentifier,
+        cardName = "Вопрос"//our page in infinity list
     )
 }
 
 @Composable
 fun interviewSpecificPage(
-    questionsAnswersListIn: List<Answer>,
+    questionsAnswersListIn: List<Answer> = listOf(),
     questionName: String,
-    questionStateIn:StateAnswer,
+    questionStateIn: StateAnswer,
     id: Int
 ) {
     val questionsAnswersList = questionsAnswersListIn
-    val questionsList =  DataProvider.questionsAnswersList
+    val questionsList = DataProvider.Interview.questionsAnswersList
     Scaffold(
         modifier = Modifier,
         backgroundColor = MaterialTheme.colors.background,
@@ -97,7 +100,7 @@ fun interviewSpecificPage(
         }
         val transition = updateTransition(targetState = questionState)
         val background by transition.animateColor(label = "") {
-            when(it){
+            when (it) {
                 StateAnswer.NOTANSWERED -> MaterialTheme.myColors.dzenColor
                 StateAnswer.ANSWEREDCORRECT -> MaterialTheme.myColors.correctColor
                 StateAnswer.ANSWEREDINCORRECT -> MaterialTheme.myColors.incorrectColor
@@ -117,16 +120,15 @@ fun interviewSpecificPage(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(questionsAnswersList) { answer ->
+                itemsIndexed(questionsAnswersList) { indexAnswer, answer ->
                     SpecificInterviewCard(
                         name = answer.name,
+                        indexAnswer = indexAnswer,
                         percent = answer.percent,
                         questionsAnswersList = questionsAnswersList,
                         isRight = answer.isRight,
-                        stateButton = remember { mutableStateOf(answer.isClicked) },
-                        isQuestionAnswered = remember {
-                         questionsList[id].questionAnswered
-                        },
+                        stateButton = answer.isClicked,
+                        isQuestionAnswered = questionsList[id].questionAnswered,
                         id = id,
                         onClickCard = ::onClickAnswer,
                     )
@@ -136,39 +138,34 @@ fun interviewSpecificPage(
     }
 }
 
-fun <T> SnapshotStateList<T>.swapList(newList: SnapshotStateList<T>){
-    clear()
-    addAll(newList)
-}
-
-fun changeListOnClick(id: Int) {
-
-
-}
-
 private fun onClickAnswer(
-    stateButton: MutableState<AnimationStateButton>,
+    stateButton: MutableState<StateAnswer>,
     id: Int,
+    indexAnswer: Int,
     list: List<Answer>,
     questionAnswered: MutableState<Boolean>,
     isRight: Boolean
-): StateAnswer {
-    var list = DataProvider.questionsAnswersList
-    if (stateButton.value == AnimationStateButton.UNCLICKED && !questionAnswered.value) {
-        stateButton.value = AnimationStateButton.CLICKED
+) {
+    var list = DataProvider.Interview.questionsAnswersList
+    println(" LIST ${list[id].listAnswers[indexAnswer]}")
+    if (stateButton.value == StateAnswer.NOTANSWERED && !questionAnswered.value) {
         list[id] = list[id].copy(questionAnswered = mutableStateOf(true))
-        if (isRight) {
-            list[id] = list[id].copy(questionState =  StateAnswer.ANSWEREDCORRECT)
-            return  StateAnswer.ANSWEREDCORRECT
-        }
-        else{
-            list[id] = list[id].copy(questionState =  StateAnswer.ANSWEREDINCORRECT)
-            return StateAnswer.ANSWEREDINCORRECT}
-        DataProvider.questionsAnswersList.swapList(list)
-        println("LIST SWAPPEDDD ${DataProvider.questionsAnswersList[id].questionState}")
-    }
 
-    return StateAnswer.CLICKBLOCK
+        if (isRight) {
+            list[id] = list[id].copy(questionState = StateAnswer.ANSWEREDCORRECT)
+            list[id].listAnswers[indexAnswer] = list[id].listAnswers[indexAnswer].copy(isClicked = StateAnswer.ANSWEREDCORRECT)
+            stateButton.value = StateAnswer.ANSWEREDCORRECT
+        } else{
+            list[id] = list[id].copy(questionState = StateAnswer.ANSWEREDINCORRECT)
+            list[id].listAnswers[indexAnswer] = list[id].listAnswers[indexAnswer].copy(isClicked = StateAnswer.ANSWEREDINCORRECT)
+            stateButton.value = StateAnswer.ANSWEREDINCORRECT
+        }
+        if(list[id].questionAnswered.value){
+
+        }
+        DataProvider.Interview.questionsAnswersList.swapList(list)
+//        println("LIST SWAPPEDDD ${DataProvider.Interview.questionsAnswersList[id].questionState}")
+    }
 }
 
 enum class StateAnswer() {
@@ -178,24 +175,32 @@ enum class StateAnswer() {
 @Composable
 fun SpecificInterviewCard(
     name: String,
+    indexAnswer: Int,
     percent: Float,
     isRight: Boolean,
     questionsAnswersList: List<Answer>,
-    stateButton: MutableState<AnimationStateButton>,
+    stateButton: StateAnswer,
     isQuestionAnswered: MutableState<Boolean>,
     id: Int,
     shape: RoundedCornerShape = RoundedCornerShape(10.dp),
     onClickCard: (
-        stateButton: MutableState<AnimationStateButton>,
+        stateButton: MutableState<StateAnswer>,
         id: Int,
+        indexAnswer: Int,
         questionsAnswersList: List<Answer>,
         questionAnswered: MutableState<Boolean>,
         isRight: Boolean
-    ) -> StateAnswer
+    ) -> Unit
 ) {
     var size by remember { mutableStateOf(Size.Zero) }
     var state: MutableState<StateAnswer> = remember {
         mutableStateOf(StateAnswer.NOTANSWERED)
+    }
+    val correctVisibility = remember {
+        mutableStateOf(state.value == StateAnswer.ANSWEREDCORRECT)
+    }
+    val incorrectVisibility = remember {
+        mutableStateOf(state.value == StateAnswer.ANSWEREDINCORRECT)
     }
     val offsetTransfer = remember {
         mutableStateOf(
@@ -214,10 +219,11 @@ fun SpecificInterviewCard(
             .padding(12.dp)
             .clickable {
                 if (!isQuestionAnswered.value) {
-                    state = mutableStateOf(
+                    mutableStateOf(
                         onClickCard(
-                            stateButton,
+                            mutableStateOf(stateButton),
                             id,
+                            indexAnswer,
                             questionsAnswersList,
                             isQuestionAnswered,
                             isRight
@@ -232,13 +238,16 @@ fun SpecificInterviewCard(
         shape = shape,
         elevation = 10.dp,
     ) {
-        Box(){
+        Box() {
             BackgroundColorCircle(
-                visibility = state.value == StateAnswer.ANSWEREDINCORRECT
-                        || state.value == StateAnswer.ANSWEREDCORRECT ,
+                visibility = correctVisibility.value
+                        || incorrectVisibility.value,
                 offsetTransfer,
-                color = if (state.value == StateAnswer.ANSWEREDCORRECT) {MaterialTheme.myColors.correctColor}
-                else { MaterialTheme.myColors.incorrectColor}
+                color = if (correctVisibility.value) {
+                    MaterialTheme.myColors.correctColor
+                } else {
+                    MaterialTheme.myColors.incorrectColor
+                }
             )
         }
         Row(
@@ -252,23 +261,24 @@ fun SpecificInterviewCard(
                 Text(text = isRight.toString())
                 Text(text = isQuestionAnswered.value.toString())
             }
-            AnimatedVisibility(visible = state.value == StateAnswer.ANSWEREDCORRECT) {
+            AnimatedVisibility(visible = correctVisibility.value) {
                 Icon(
                     imageVector = Icons.Filled.Done,
-                    contentDescription = stringResource(id = R.string.done_icon_desc)
+                    contentDescription = stringResource(id = R.string.done_icon_desc),
+                    tint = MaterialTheme.myColors.correctColor
                 )
             }
-            AnimatedVisibility(visible = state.value == StateAnswer.ANSWEREDINCORRECT) {
+            AnimatedVisibility(visible = incorrectVisibility.value) {
                 Icon(
                     imageVector = Icons.Filled.Dangerous,
-                    contentDescription = stringResource(id = R.string.wrong_icon_desc)
+                    contentDescription = stringResource(id = R.string.wrong_icon_desc),
+                    tint = MaterialTheme.myColors.incorrectColor
                 )
             }
             VisibleText(
                 text = (((percent * 10).roundToInt()) / 10.0).toString(),
                 visibility = state.value == StateAnswer.ANSWEREDCORRECT ||
-                        state.value == StateAnswer.ANSWEREDINCORRECT    ||
-                        state.value == StateAnswer.CLICKBLOCK
+                        state.value == StateAnswer.ANSWEREDINCORRECT
             )
 
         }
@@ -303,7 +313,7 @@ fun BackgroundColorCircle(
     }
 }
 
-fun createContentSpecificPage(): List<Answer> {
+fun createContentSpecificPage(): MutableList<Answer> {
     val answersList = mutableListOf<Answer>()
     val answersCount = (2..7).random()
     val listResponders = mutableListOf<Float>()
@@ -328,7 +338,7 @@ fun createContentSpecificPage(): List<Answer> {
                 name = numberToName(index + 1),
                 percent = (listResponders[index] / allResponders) * 100,
                 isRight = isRight,
-                isClicked = AnimationStateButton.UNCLICKED
+                isClicked = StateAnswer.NOTANSWERED
             )
         )
     }

@@ -2,6 +2,7 @@ package com.example.vkcupsecond
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 
 
 object DataProvider {
@@ -12,20 +13,31 @@ object DataProvider {
         Screen(4, "Заполнение пропуска в тексте"),
         Screen(5, "Оценка прочитанной статьи — от 1 до 5 звёзд"),
     )
-    val questionList = (0..20).toMutableList()
-    val reviewList = (0..20).toMutableList()
-    val reviewSpecifiedList = mutableStateListOf<ReviewInformation>()
-    val questionsAnswersList = mutableStateListOf<Question>()
+    object Interview{
+        val questionList = (0..20).toMutableList()
+        val questionsAnswersList = mutableStateListOf<Question>()
+    }
+    object FillGaps{
+        val textFillGapsList = (0..20).toMutableList()
+        val gapsSpecifiedList = mutableStateListOf<GapsInformation>()
+    }
+    object Review {
+        val reviewList = (0..20).toMutableList()
+        val reviewSpecifiedList = mutableStateListOf<ReviewInformation>()
+        val rated = mutableStateOf(false)
+    }
+
+
 }
 
 data class Answer(
     val name: String,
     val percent: Float,
     val isRight: Boolean,
-    val isClicked: AnimationStateButton
+    val isClicked: StateAnswer
 )
 data class Question(
-    val listAnswers: List<Answer>,
+    val listAnswers: MutableList<Answer>,
     var questionAnswered: MutableState<Boolean>,
     var questionRightAnswered:Boolean,
     var questionState: StateAnswer
@@ -33,6 +45,11 @@ data class Question(
 data class ReviewInformation(
     val avarageReview:Float,
     val countReviewers:Int
+)
+
+data class GapsInformation(
+    val gapsLocation:MutableList<Int>,
+    val wordList:MutableList<String>
 )
 
 enum class AnimationStateButton(val boolean: Boolean) {
