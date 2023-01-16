@@ -208,7 +208,7 @@ fun FillGapsFunction(
                         onValueChange = {
 
                             answersList[index].value = it
-                            if (it == word.word) {
+                            if (it.trim().lowercase() == word.word.trim().lowercase()) {
                                 rightGapsCounter.value++
                                 wordState.value = WordAnswerState.CORRECT
                             } else {

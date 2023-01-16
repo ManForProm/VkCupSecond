@@ -81,12 +81,14 @@ private class CalculationListHelper() {
     }
 }
 
+fun Int.toBoolean() = this == 1
+
 private fun fillSpecifiedGapsList(list: MutableList<Int>) {
     val generatedList = mutableListOf<Word>()
     val calc = CalculationListHelper()
     var count = 0
     "Этот большой текст для заполнения слов и пропусков и всего такого в виде строки".split(" ").forEach {
-        generatedList.add(Word(word = it, needGap = Random.nextBoolean(), mutableStateOf(true)))
+        generatedList.add(Word(word = it, needGap = (0..1).random().toBoolean(), mutableStateOf(true)))
     }
     generatedList.forEach {
         if (it.needGap){
