@@ -29,8 +29,8 @@ import androidx.navigation.NavHostController
 fun InfinityView(
     navHostController: NavHostController,
     specificPageIdentifier:String,
+    cardName:String,
     list: MutableList<Int>,
-    onClickSpecificCard: (Int,String, String, NavHostController) -> Unit,
     onPreScroll: (MutableList<Int>) -> Unit
 ) {
     val nestedScrollConnection = remember {
@@ -60,11 +60,10 @@ fun InfinityView(
         ) {
             items(list) {
                 InfinityViewCard(
-                    name = "Вопрос",
+                    name = cardName,
                     id = it,
                     specificPageIdentifier = specificPageIdentifier,
                     navHostController = navHostController,
-                    onClickCard = onClickSpecificCard,
                 )
             }
         }
@@ -79,13 +78,14 @@ fun InfinityViewCard(
     specificPageIdentifier:String,
     id: Int,
     navHostController: NavHostController,
-    onClickCard: (Int,String, String, NavHostController) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
-            .clickable(onClick = { onClickCard(id,specificPageIdentifier, name, navHostController) }),
+            .clickable{
+                navigateToSpecificInfinityView(id,name,specificPageIdentifier,navHostController = navHostController)
+            },
         backgroundColor = MaterialTheme.colors.primary,
         shape = shape,
         elevation = 10.dp

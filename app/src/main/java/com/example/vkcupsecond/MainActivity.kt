@@ -14,13 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.vkcupsecond.DataProvider.Interview.questionList
 import com.example.vkcupsecond.ui.theme.VkCupSecondTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fillSpecifiedInterviewList(DataProvider.questionList)
-        fillSpecifiedReviewList(DataProvider.reviewList)
+        fillSpecifiedInterviewList(DataProvider.Interview.questionList)
+        fillSpecifiedReviewList(DataProvider.Review.reviewList)
         setContent {
             VkCupSecondTheme {
                 MyAppNavHost()
@@ -41,12 +42,18 @@ private fun<T> onScrollList(list:MutableList<Int>,fillList:SnapshotStateList<T>,
 }
 
 private fun fillSpecifiedInterviewList(list:MutableList<Int>){
-    onScrollList(list = list, DataProvider.questionsAnswersList, Question(listAnswers = createContentSpecificPage(),
+    onScrollList(list = list, DataProvider.Interview.questionsAnswersList, Question(listAnswers = createContentSpecificPage(),
         questionAnswered = mutableStateOf(false), questionRightAnswered = false, questionState = StateAnswer.NOTANSWERED))
 }
+
 private fun fillSpecifiedReviewList(list:MutableList<Int>,){
-    onScrollList(list = list, DataProvider.reviewSpecifiedList, ReviewInformation(avarageReview = (0..50).random().toFloat()/10,
+    onScrollList(list = list, DataProvider.Review.reviewSpecifiedList, ReviewInformation(avarageReview = (0..50).random().toFloat()/10,
         countReviewers = (0..2000).random()))
+}
+
+private fun fillSpecifiedGapsList(list:MutableList<Int>,){
+    onScrollList(list = list, DataProvider.FillGaps.gapsSpecifiedList,
+        GapsInformation(mutableListOf(1,2), mutableListOf("aa","bbb","CCC","GG")),)
 }
 
 @Composable
@@ -61,9 +68,9 @@ fun MyAppNavHost(
         }
         composable("interviewPage") {
             InterviewView(navHostController = navController,
-                questionsList = DataProvider.questionList,
+                questionsList = DataProvider.Interview.questionList,
                 onPreScroll = ::fillSpecifiedInterviewList,
-            specificPageIdentifier = "interviewSpecificPage")
+            specificPageIdentifier = "interviewSpecificPage",)
         }
         composable(
             route = "interviewSpecificPage/{id}/{questionName}",
@@ -74,9 +81,9 @@ fun MyAppNavHost(
         ){
             val id = it.arguments?.getInt("id")!!
             val questionName = it.arguments?.getString("questionName")!!
-            interviewSpecificPage(DataProvider.questionsAnswersList[id].listAnswers,
+            interviewSpecificPage(DataProvider.Interview.questionsAnswersList[id].listAnswers,
                 questionName,
-                DataProvider.questionsAnswersList[id].questionState,
+                DataProvider.Interview.questionsAnswersList[id].questionState,
                 id)
         }
         composable("twoColumsPage") {
@@ -85,14 +92,36 @@ fun MyAppNavHost(
         composable("dragAndDropPage") {
             DragAndDropView()
         }
+        //FillGaps
         composable("fillGapsPage") {
-            FillGapsView()
+            FillGapsView(navHostController = navController,
+                questionsFillGapsList = DataProvider.FillGaps.textFillGapsList,
+                onPreScroll = ::fillSpecifiedGapsList,
+                specificPageIdentifier = "fillGapsSpecificPage",)
         }
+        composable(
+            route = "fillGapsSpecificPage/{id}/{questionName}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.IntType },
+                navArgument("questionName") { type = NavType.StringType },
+            )
+        ){
+            val id = it.arguments?.getInt("id")!!
+            val questionName = it.arguments?.getString("questionName")!!
+            FillGapsSpecificPage(id = id,
+                reviewName = questionName,
+//            wordList = DataProvider.FillGaps.gapsSpecifiedList[id].wordList,
+//            gapsLocation = DataProvider.FillGaps.gapsSpecifiedList[id].gapsLocation,
+            )
+        }
+
+        //Review
         composable("reviewPage") {
             ReviewView(navHostController = navController,
-                reviewList = DataProvider.reviewList,
+                reviewList = DataProvider.Review.reviewList,
                 onPreScroll = ::fillSpecifiedReviewList,
-                specificPageIdentifier = "reviewSpecificPage")
+                specificPageIdentifier = "reviewSpecificPage",
+            )
         }
         composable(
             route = "reviewSpecificPage/{id}/{questionName}",
@@ -109,6 +138,7 @@ fun MyAppNavHost(
 
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
