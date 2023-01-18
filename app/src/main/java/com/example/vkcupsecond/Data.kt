@@ -15,15 +15,19 @@ object DataProvider {
         Screen(4, "Заполнение пропуска в тексте"),
         Screen(5, "Оценка прочитанной статьи — от 1 до 5 звёзд"),
     )
+    object TwoColums{
+        val questionList = (0..20).toMutableList()
+        val questionsAnswersList = mutableStateListOf<Question<AnswerTwoColums>>()
+    }
     object Interview{
         val questionList = (0..20).toMutableList()
-        val questionsAnswersList = mutableStateListOf<Question>()
+        val questionsAnswersList = mutableStateListOf<Question<AnswerInterview<StateAnswer>>>()
     }
     object FillGaps{
         val textFillGapsList = (0..20).toMutableList()
         val gapsSpecifiedList = mutableStateListOf<GapsInformation>()
     }
-    object Review {
+    object Review{
         val reviewList = (0..20).toMutableList()
         val reviewSpecifiedList = mutableStateListOf<ReviewInformation>()
         val rated = mutableStateOf(false)
@@ -31,19 +35,24 @@ object DataProvider {
 
 
 }
-
-data class Answer(
-    val name: String,
-    val percent: Float,
-    val isRight: Boolean,
-    val isClicked: StateAnswer
-)
-data class Question(
-    val listAnswers: MutableList<Answer>,
+data class Question<ListType>(
+    val listAnswers: MutableList<ListType>,
     var questionAnswered: MutableState<Boolean>,
     var questionRightAnswered:Boolean,
     var questionState: StateAnswer
 )
+data class AnswerInterview<StateType>(
+    val name: String,
+    val percent: Float,
+    val isRight: Boolean,
+    val isClicked: StateType
+)
+data class AnswerTwoColums(
+    val name: String,
+    val isRight: Boolean,
+    val isClicked: StateAnswer)
+
+
 data class ReviewInformation(
     val avarageReview:Float,
     val countReviewers:Int

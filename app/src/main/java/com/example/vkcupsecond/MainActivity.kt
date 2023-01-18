@@ -3,7 +3,6 @@ package com.example.vkcupsecond
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -14,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.vkcupsecond.pages.AllPagesInOne
 import com.example.vkcupsecond.ui.theme.VkCupSecondTheme
 import kotlin.random.Random
 
@@ -81,23 +81,26 @@ private class CalculationListHelper() {
     }
 }
 
-fun Int.toBoolean() = this == 1
+fun Int.toBoolean() = this == 0
 
-private fun fillSpecifiedGapsList(list: MutableList<Int>) {
+fun generateListOfFillGapsWords():GapsInformation{
     val generatedList = mutableListOf<Word>()
-    val calc = CalculationListHelper()
-    var count = 0
     "Этот большой текст для заполнения слов и пропусков и всего такого в виде строки".split(" ").forEach {
-        generatedList.add(Word(word = it, needGap = (0..1).random().toBoolean(), mutableStateOf(true)))
+        generatedList.add(Word(word = it, needGap = (0..5).random().toBoolean(), mutableStateOf(true)))
     }
+    var count = 0
     generatedList.forEach {
         if (it.needGap){
             count += 1
         }
     }
+    return GapsInformation(generatedList,count)
+}
+private fun fillSpecifiedGapsList(list: MutableList<Int>) {
+
     onScrollList(
         list = list, DataProvider.FillGaps.gapsSpecifiedList,
-        GapsInformation(generatedList,count),
+        generateListOfFillGapsWords(),
     )
 }
 
@@ -110,6 +113,9 @@ fun MyAppNavHost(
     NavHost(navController = navController, startDestination = startDestination) {
         composable("mainView") {
             MainView(navController, DataProvider.screenList)
+        }
+        composable("allPagesInOne"){
+            AllPagesInOne()
         }
         composable("interviewPage") {
             InterviewView(
@@ -129,18 +135,42 @@ fun MyAppNavHost(
             val id = it.arguments?.getInt("id")!!
             val questionName = it.arguments?.getString("questionName")!!
             interviewSpecificPage(
-                DataProvider.Interview.questionsAnswersList[id].listAnswers,
-                questionName,
-                DataProvider.Interview.questionsAnswersList[id].questionState,
-                id
+                DataProvider.Interview.questionsAnswersList,
+                questionName + id.toString(),
+                id,
             )
         }
+
+        //Two Colums
         composable("twoColumsPage") {
-            TwoColumsView()
+            TwoColumsView(navHostController = navController,
+                questionsTwoColumsList = DataProvider.FillGaps.textFillGapsList,
+                onPreScroll = ::fillSpecifiedGapsList,
+                specificPageIdentifier = "fillGapsSpecificPage",
+            )
         }
+        composable(
+            route = "twoColumsSpecificPage/{id}/{questionName}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.IntType },
+                navArgument("questionName") { type = NavType.StringType },
+            )
+        ) {
+            val id = it.arguments?.getInt("id")!!
+            val questionName = it.arguments?.getString("questionName")!!
+            TwoColumsSpecificPage(
+                id = id,
+                reviewName = questionName,
+                wordList = DataProvider.FillGaps.gapsSpecifiedList[id].wordList,
+                )
+        }
+
+
+        //Drag And Drop
         composable("dragAndDropPage") {
             DragAndDropView()
         }
+
         //FillGaps
         composable("fillGapsPage") {
             FillGapsView(
@@ -159,10 +189,9 @@ fun MyAppNavHost(
         ) {
             val id = it.arguments?.getInt("id")!!
             val questionName = it.arguments?.getString("questionName")!!
-            println("LIST SPC GAPS${DataProvider.FillGaps.gapsSpecifiedList[id].wordList}")
             FillGapsSpecificPage(
                 id = id,
-                reviewName = questionName,
+                title = questionName + id.toString(),
                 wordList = DataProvider.FillGaps.gapsSpecifiedList[id].wordList,
                 gapsCount = DataProvider.FillGaps.gapsSpecifiedList[id].gapsCount,
 
@@ -189,7 +218,7 @@ fun MyAppNavHost(
             val questionName = it.arguments?.getString("questionName")!!
             ReviewSpecificPage(
                 id = id,
-                reviewName = questionName,
+                reviewName = questionName + id.toString(),
             )
         }
 
@@ -201,6 +230,6 @@ fun MyAppNavHost(
 @Composable
 fun DefaultPreview() {
     VkCupSecondTheme {
-        Text(text = "Hello!")
+        MyAppNavHost()
     }
 }

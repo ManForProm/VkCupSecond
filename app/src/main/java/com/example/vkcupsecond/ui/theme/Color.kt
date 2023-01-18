@@ -3,13 +3,15 @@ package com.example.vkcupsecond.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val DzenColorLight = Color(0xE0FF5317)
-val DzenColorDark = Color(0xE0A74827)
+val DzenColorDark = Color(0xE0D67959)
 val DzenColorSecond = Color(0xFFFFCC00)
 val InvisibaleColor = Color(0xFFFFFF)
 val InterviewHeaderColor = Color(0xFFA2A2A2)
 val InterviewHeaderColorDark = Color(0xFF353535)
 val CorrectColorLight = Color(0xFF66BB6A)
 val CorrectColorDark = Color(0xFF81C784)
+val CorrectColorLightALittle = Color(0xFF98BD99)
+val CorrectColorDarkALittle = Color(0xFFA2C2A3)
 val IncorrectColorLight = Color(0xFFF83434)
 val IncorrectColorDark = Color(0xFFEF5350)
 val IncorrectColorALittleLight = Color(0xFFF48F8F)

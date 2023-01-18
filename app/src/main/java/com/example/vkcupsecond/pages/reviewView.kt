@@ -1,25 +1,23 @@
 package com.example.vkcupsecond
 
-import android.os.Handler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Grade
-import androidx.compose.material.icons.outlined.Grade
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.twotone.Star
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import androidx.navigation.NavHostController
 import com.example.vkcupsecond.ui.theme.myColors
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @Composable
 fun ReviewView(
@@ -32,7 +30,7 @@ fun ReviewView(
         navHostController = navHostController,
         list = reviewList, onPreScroll = onPreScroll,
         specificPageIdentifier = specificPageIdentifier,
-        cardName = "Оценка"//our page in infinity list
+        cardName = "Оценка №"//our page in infinity list
     )
 }
 
@@ -57,6 +55,7 @@ fun ReviewSpecificPage(
             shape = RoundedCornerShape(10.dp),
             elevation = 10.dp
         ) {
+
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -70,7 +69,13 @@ fun ReviewSpecificPage(
                         color = MaterialTheme.myColors.dzenColor
                     )
                     DataProvider.Review.rated.value =
-                        InAppReview(Icons.Outlined.Grade,Icons.Filled.Grade, DataProvider.Review.rated)
+                        InAppReview(Icons.TwoTone.Star,Icons.Filled.Star, DataProvider.Review.rated)
+                    PoopingUpButton(
+                        textModifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp), modifier = Modifier.align(Alignment.CenterHorizontally),
+                        visibility = DataProvider.Review.rated.value,
+                        text = "Thanks!"){
+                        DataProvider.navHostControllerGlobal.navigate("reviewPage")
+                    }
                 }
             }
         }
@@ -78,6 +83,13 @@ fun ReviewSpecificPage(
 }
 
 
+data class Stars(
+    val oneStarIcon:ImageVector,
+    val twoStarsIcon:ImageVector,
+    val threeStarsIcon:ImageVector,
+    val fourStarsIcon:ImageVector,
+    val fiveStarsIcon:ImageVector,
+)
 @Composable
 fun InAppReview(
     iconReview: ImageVector,
@@ -96,80 +108,72 @@ fun InAppReview(
         val localRatedState = remember {
             mutableStateOf(false)
         }
-        val oneStarIcon = remember {
-            mutableStateOf(iconReview)
-        }
-        val twoStarsIcon = remember {
-            mutableStateOf(iconReview)
-        }
-        val threeStarsIcon = remember {
-            mutableStateOf(iconReview)
-        }
-        val fourStarsIcon = remember {
-            mutableStateOf(iconReview)
-        }
-        val fiveStarsIcon = remember {
-            mutableStateOf(iconReview)
+        val icons = remember {
+            mutableStateOf(Stars(iconReview,
+                iconReview,
+                iconReview,
+                iconReview,
+                iconReview,))
         }
         val timeAnimation = 100L
 
         fun oneStar() {
-            oneStarIcon.value = iconReviewFilled
-             twoStarsIcon.value = iconReview
-             threeStarsIcon.value = iconReview
-             fourStarsIcon.value = iconReview
-             fiveStarsIcon.value = iconReview
+
+            icons.value = Stars(iconReviewFilled,
+                iconReview,
+                iconReview,
+                iconReview,
+                iconReview,)
             localRatedState.value = true
         }
 
         fun twoStars() {
-            oneStarIcon.value = iconReviewFilled
-             twoStarsIcon.value = iconReviewFilled
-             threeStarsIcon.value = iconReview
-             fourStarsIcon.value = iconReview
-            fiveStarsIcon.value = iconReview
+            icons.value = Stars(iconReviewFilled,
+                iconReviewFilled,
+                iconReview,
+                iconReview,
+                iconReview,)
             localRatedState.value = true
 
         }
 
         fun threeStars() {
-            oneStarIcon.value = iconReviewFilled
-            twoStarsIcon.value = iconReviewFilled
-             threeStarsIcon.value = iconReviewFilled
-             fourStarsIcon.value = iconReview
-             fiveStarsIcon.value = iconReview
+            icons.value = Stars(iconReviewFilled,
+                iconReviewFilled,
+                iconReviewFilled,
+                iconReview,
+                iconReview,)
             localRatedState.value = true
 
         }
 
         fun fourStars() {
-            oneStarIcon.value = iconReviewFilled
-            twoStarsIcon.value = iconReviewFilled
-             threeStarsIcon.value = iconReviewFilled
-             fourStarsIcon.value = iconReviewFilled
-            fiveStarsIcon.value = iconReview
+            icons.value = Stars(iconReviewFilled,
+                iconReviewFilled,
+                iconReviewFilled,
+                iconReviewFilled,
+                iconReview,)
             localRatedState.value = true
 
         }
 
         fun fiveStars() {
-            oneStarIcon.value = iconReviewFilled
-            twoStarsIcon.value = iconReviewFilled
-            threeStarsIcon.value = iconReviewFilled
-            fourStarsIcon.value = iconReviewFilled
-            fiveStarsIcon.value = iconReviewFilled
-
+            icons.value = Stars(iconReviewFilled,
+                iconReviewFilled,
+                iconReviewFilled,
+                iconReviewFilled,
+                iconReviewFilled,)
             localRatedState.value = true
 
         }
     }
-    Row() {
+    Row(horizontalArrangement = Arrangement.Center) {
         Icon(
             modifier = Modifier.clickable {
                 stars.oneStar()
 
             },
-            imageVector = stars.oneStarIcon.value,
+            imageVector = stars.icons.value.oneStarIcon,
             contentDescription = stringResource(id = R.string.app_review),
             tint = MaterialTheme.myColors.dzenColor,
         )
@@ -179,7 +183,7 @@ fun InAppReview(
                 stars.twoStars()
 
             },
-            imageVector = stars.twoStarsIcon.value,
+            imageVector = stars.icons.value.twoStarsIcon,
             contentDescription = stringResource(id = R.string.app_review),
             tint = MaterialTheme.myColors.dzenColor,
         )
@@ -188,7 +192,7 @@ fun InAppReview(
                 stars.threeStars()
 
             },
-            imageVector = stars.threeStarsIcon.value,
+            imageVector = stars.icons.value.threeStarsIcon,
             contentDescription = stringResource(id = R.string.app_review),
             tint = MaterialTheme.myColors.dzenColor,
         )
@@ -196,7 +200,7 @@ fun InAppReview(
             modifier = Modifier.clickable {
                 stars.fourStars()
             },
-            imageVector = stars.fourStarsIcon.value,
+            imageVector = stars.icons.value.fourStarsIcon,
             contentDescription = stringResource(id = R.string.app_review),
             tint = MaterialTheme.myColors.dzenColor,
         )
@@ -204,7 +208,7 @@ fun InAppReview(
             modifier = Modifier.clickable {
                 stars.fiveStars()
             },
-            imageVector = stars.fiveStarsIcon.value,
+            imageVector = stars.icons.value.fiveStarsIcon,
             contentDescription = stringResource(id = R.string.app_review),
             tint = MaterialTheme.myColors.dzenColor,
         )
@@ -212,4 +216,8 @@ fun InAppReview(
     return stars.localRatedState.value
 }
 
-
+@Preview
+@Composable
+fun ReviewCpecificCardPreview(){
+    ReviewSpecificPage(reviewName = "Preview", id = 1 )
+}

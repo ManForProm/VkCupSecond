@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.vkcupsecond.ui.theme.inter
+import com.example.vkcupsecond.ui.theme.myColors
 
 @Composable
 fun InfinityView(
@@ -144,6 +145,7 @@ fun VisibleText(
 }
 @Composable
 fun PoopingUpButton(modifier: Modifier, visibility: Boolean = true,
+                    textModifier: Modifier = Modifier.padding(top = 7.dp, bottom = 7.dp,start = 20.dp, end = 20.dp),
                     text: String = "Next",
                     onClick: () -> Unit) {
     val animationExpandShrinkSpec = tween<IntSize>(durationMillis = 200)
@@ -166,8 +168,8 @@ fun PoopingUpButton(modifier: Modifier, visibility: Boolean = true,
             VisibleText(
                 text = text,
                 visibility = true,
-                modifier = Modifier.padding(top = 7.dp, bottom = 7.dp,start = 20.dp, end = 20.dp),
-                color = Color.Gray,
+                modifier = textModifier,
+                color = MaterialTheme.myColors.dzenColor,
                 fontFamily = inter,
                 fontWeight = FontWeight.Medium,
                 fontSize = 18.sp

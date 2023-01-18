@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -42,13 +43,13 @@ fun FillGapsView(
         specificPageIdentifier = specificPageIdentifier,
         onClickSpecificCard = {
         },
-        cardName = "Вопрос"//our page in infinity list
+        cardName = "Вопрос №"//our page in infinity list
     )
 }
 
 @Composable
 fun FillGapsSpecificPage(
-    reviewName: String,
+    title: String = "",
     wordList: MutableList<Word> = mutableListOf(),
     gapsCount: Int,
     id: Int
@@ -88,13 +89,15 @@ fun FillGapsSpecificPage(
                     .fillMaxWidth()
                     .padding(10.dp),
             ) {
-                Column() {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "$reviewName №$id",
-                        fontSize = 20.sp,
-                        color = MaterialTheme.myColors.dzenColor
-                    )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if(title.isNotEmpty()){
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = title,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.myColors.dzenColor
+                        )
+                    }
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         text = "Заполните пропуски словами",
@@ -102,7 +105,9 @@ fun FillGapsSpecificPage(
                         color = MaterialTheme.myColors.interviewHeaderColor
                     )
                     FillGapsFunction(wordList, gapsCount, cardColorChanger::changeState)
-                    PoopingUpButton(modifier = Modifier.align(Alignment.CenterHorizontally),
+                    PoopingUpButton(
+                        textModifier = Modifier.padding(top = 7.dp, bottom = 7.dp,start = 10.dp, end = 10.dp)
+                        , modifier = Modifier.align(Alignment.CenterHorizontally),
                     visibility = stateCard.value == WordAnswerState.CORRECT,
                     text = "Correct!"){
                         DataProvider.navHostControllerGlobal.navigate("fillGapsPage")
@@ -228,4 +233,10 @@ fun FillGapsFunction(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun FillGapsCpecificCardPreview(){
+    FillGapsSpecificPage(title = "Preview", gapsCount = 5, id = 1)
 }

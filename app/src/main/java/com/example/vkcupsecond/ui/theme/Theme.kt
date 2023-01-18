@@ -7,6 +7,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
+
 
 private val DarkColorPalette = MyColors(
     material = darkColors(
@@ -21,6 +24,7 @@ private val DarkColorPalette = MyColors(
     dzenColor = DzenColorDark,
     invisible = InvisibaleColor,
     incorrectColorALittle = IncorrectColorALittleDark,
+    correctColorALittle = CorrectColorDarkALittle,
 )
 
 private val LightColorPalette = MyColors(
@@ -36,6 +40,7 @@ private val LightColorPalette = MyColors(
     dzenColor = DzenColorLight,
     invisible = InvisibaleColor,
     incorrectColorALittle = IncorrectColorALittleLight,
+    correctColorALittle = CorrectColorLightALittle,
 )
 val MaterialTheme.myColors: MyColors
     @Composable
@@ -64,6 +69,8 @@ fun VkCupSecondTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
+
+
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
@@ -85,7 +92,9 @@ data class MyColors(
     val incorrectColor:Color,
     val dzenColor: Color,
     val invisible:Color,
-    val incorrectColorALittle: Color
+    val incorrectColorALittle: Color,
+    val correctColorALittle: Color,
+
 ) {
     val primary: Color get() = material.primary
     val primaryVariant: Color get() = material.primaryVariant
