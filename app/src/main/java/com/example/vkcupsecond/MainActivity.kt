@@ -83,9 +83,9 @@ private class CalculationListHelper() {
 
 fun Int.toBoolean() = this == 0
 
-fun generateListOfFillGapsWords():GapsInformation{
+fun generateListOfFillGapsWords(text:String):GapsInformation{
     val generatedList = mutableListOf<Word>()
-    "Этот большой текст для заполнения слов и пропусков и всего такого в виде строки".split(" ").forEach {
+    text.split(" ").forEach {
         generatedList.add(Word(word = it, needGap = (0..5).random().toBoolean(), mutableStateOf(true)))
     }
     var count = 0
@@ -100,7 +100,7 @@ private fun fillSpecifiedGapsList(list: MutableList<Int>) {
 
     onScrollList(
         list = list, DataProvider.FillGaps.gapsSpecifiedList,
-        generateListOfFillGapsWords(),
+        generateListOfFillGapsWords("Этот большой текст для заполнения слов и пропусков и всего такого в виде строки"),
     )
 }
 
@@ -158,11 +158,11 @@ fun MyAppNavHost(
         ) {
             val id = it.arguments?.getInt("id")!!
             val questionName = it.arguments?.getString("questionName")!!
-            TwoColumsSpecificPage(
-                id = id,
-                reviewName = questionName,
-                wordList = DataProvider.FillGaps.gapsSpecifiedList[id].wordList,
-                )
+//            TwoColumsSpecificPage(
+//                id = id,
+//                reviewName = questionName,
+//                wordList = DataProvider.FillGaps.gapsSpecifiedList[id].wordList,
+//                )
         }
 
 

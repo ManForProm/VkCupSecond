@@ -129,7 +129,7 @@ fun interviewSpecificPage(
 //        val calcBack = when (questionState) {
         Card(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxWidth()
                 .padding(12.dp)
                 .onGloballyPositioned { coordinates ->
                     cardHeightPx = coordinates.size.height.toFloat()
@@ -140,12 +140,10 @@ fun interviewSpecificPage(
             shape = RoundedCornerShape(10.dp),
             elevation = 10.dp
         ) {
-            Box(modifier = Modifier.fillMaxSize()){
                 BackgroundColorCircle(
-                    modifier = Modifier
-                        .align(Alignment.Center),
+                    modifier = Modifier,
                     visibility = questionAnswered.value.value,
-                    size = cardHeightPx,
+                    size = cardHeightPx * 1.5f,
                     color = when (changeState.questionStateLocal.value) {
                         StateAnswer.NOTANSWERED -> MaterialTheme.myColors.background
                         StateAnswer.ANSWEREDCORRECT -> MaterialTheme.myColors.correctColorALittle
@@ -154,7 +152,6 @@ fun interviewSpecificPage(
                     },
                     offset = Offset(cardWidthPx / 2,cardHeightPx / 2)
                 )
-            }
 
             LazyColumn(
                 modifier = Modifier
@@ -330,8 +327,7 @@ fun BackgroundColorCircle(
         animationSpec = tween(durationMillis = 1000)
     )
     Canvas(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .graphicsLayer(alpha = animatedAlphaState.value)
     ) {
         drawCircle(

@@ -56,6 +56,7 @@ fun navigateToPageOnClick(id: Int, navHostController: NavHostController) {
         3 -> navHostController.navigate("dragAndDropPage")
         4 -> navHostController.navigate("fillGapsPage")
         5 -> navHostController.navigate("reviewPage")
+        6 -> navHostController.navigate("allPagesInOne")
     }
 }
 
